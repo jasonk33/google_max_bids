@@ -13,7 +13,6 @@ def get_country_from_ISO(iso_code):
 	
 output_df = pd.read_csv("120719 - 92 Keys/120719 - 92 Keys - Google Ads - 1 Day.csv", skiprows=2)[['Campaign', 'Ad group', "Ad group max. CPV"]]
 output_df["Country"] = output_df['Campaign'].str.split("|", expand=True)[2].str.strip()
-output_df['Ad group max. CPV'] *= 0.055
 
 for day in [1, 7, 14, 30]:
     google = pd.read_csv("120719 - 92 Keys/120719 - 92 Keys - Google Ads - {} Day.csv".format(day), 
