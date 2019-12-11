@@ -35,9 +35,10 @@ for day in [1, 7, 14, 30]:
     combined_df_country_groups["Country ROAS {} days".format(day)] = combined_df_country_groups['Your estimated revenue (USD)']/combined_df_country_groups['Cost']
     df = combined_df_country_groups[['Country', 'Cost', 'Views_Google', 'YouTube Earned Views', 'Your estimated revenue (USD)', "Country ROAS {} days".format(day)]]
     df["Earned View Value {} days".format(day)] = df['Your estimated revenue (USD)']/df['YouTube Earned Views']
-    df["Earned View Cost {} days".format(day)] = df['Cost']/df['YouTube Earned Views']
-    output_df = output_df.merge(df[["Country", "Earned View Value {} days".format(day), "Earned View Cost {} days".format(day), 
+    output_df = output_df.merge(df[["Country", "Earned View Value {} days".format(day), 
                                     "Country ROAS {} days".format(day)]], on="Country", how="left")
+    output_df = output_df.merge(google[['Campaign', 'Ad group', 'Cost']], on=["Campaign", "Ad group"], how="left").rename(columns={"Cost": "Cost {} day".format(day)})
+    output_df["Earned View Cost {} days".format(day)] = output_df["Cost {} day".format(day)]/output_df["YouTube Earned Views {} days".format(day)]
 	
 def calculate_max_bid(row):
     standard_weights = {1: .4, 7: .3, 14: .2, 30: .1}
@@ -66,6 +67,6 @@ def calculate_max_bid(row):
 	
 output_df["Max Bid"] = output_df.apply(calculate_max_bid, axis=1)
 
-new_max_bid_df = output_df[output_df['Max Bid'] != output_df['Ad group max. CPV']][['Campaign', 'Ad group', 'Max Bid']].round(5)
+new_max_bid_df = output_df[output_df['Max Bid'] != output_df['Ad group max. CPV']][['Campaign', 'Ad group', 'Max Bid']].round(3)
 
 new_max_bid_df.to_csv("new_max_bid_ads.csv", index=False)
